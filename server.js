@@ -7,6 +7,7 @@ if(process.env.NODE_ENV !== 'production'){
 const express = require('express')
 const app = express()
 const expressLayouts = require('express-ejs-layouts')
+const bodyParser = require('body-parser')
 
 const mongoose = require('mongoose')
 // We don't want to hardcode our database url, we want it to be dependant on our environment.
@@ -21,6 +22,8 @@ db.once('open', () => console.log("Connected to Mongoose"))
 // This is getting our index.js file from the 'routes' folder
 const indexRouter = require('./routes/index')
 
+const authorRouter = require('./routes/authors')
+
 // The view engine facilitates the combining of data from the server with templates, before being sent to the client
 app.set('view engine', 'ejs')
 // This just tells our code where to find the views
@@ -28,9 +31,11 @@ app.set('views', __dirname + '/views')
 app.set('layout', 'layouts/layout')
 app.use(expressLayouts)
 app.use(express.static('public'))
+app.use(bodyParser.urlencoded({limit: '10mb', extended: false}))
 
 
 app.use('/', indexRouter)
+app.use('/authors', authorRouter)
 // This will pull the PORT from the environment variable. When we deploy, the server will tell us which port it is listening to, not us
 // For development, we will just use the PORT 3000
 app.listen(process.env.PORT || 3000)
